@@ -1,3 +1,5 @@
+from tools.rna_dna_tools import is_dna, is_rna
+
 def is_nucleic_acid(seq: str) -> bool:
     """
     A function that checks whether DNA and RNA have mixed.

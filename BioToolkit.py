@@ -1,19 +1,8 @@
 from tools.utils import gc_content, mean_quality
 
-from tools.dna_tools import (
-    is_dna, 
-    transcribe, 
-    reverse, 
-    complement, 
-    reverse_complement
-)
-
-from tools.rna_tools import (
-    is_rna,
-    reverse_transcribe,
-    reverse as rna_reverse,
-    complement as rna_complement,
-    reverse_complement as rna_reverse_complement
+from tools.rna_dna_tools import (
+    is_dna, is_rna, transcribe, reverse_transcribe,
+    reverse, complement, reverse_complement
 )
 
 def run_dna_rna_tools(*args):
@@ -30,7 +19,6 @@ def run_dna_rna_tools(*args):
     *sequences, procedure = args
     results = []
 
-
     for seq in sequences:
         if procedure == "is_nucleic_acid":
             results.append(is_nucleic_acid(seq))
@@ -39,30 +27,13 @@ def run_dna_rna_tools(*args):
         elif procedure == "reverse_transcribe":
             results.append(reverse_transcribe(seq))
         elif procedure == "reverse":
-            if is_dna(seq):
-                results.append(reverse(seq))
-            elif is_rna(seq):
-                results.append(rna_reverse(seq))
-            else:
-                raise ValueError("Sequence should be DNA or RNA.")
+            results.append(reverse(seq))
         elif procedure == "complement":
-            if is_dna(seq):
-                results.append(complement(seq))
-            elif is_rna(seq):
-                results.append(rna_complement(seq))
-            else:
-                raise ValueError("Sequence should be DNA or RNA.")
+            results.append(complement(seq))
         elif procedure == "reverse_complement":
-            if is_dna(seq):
-                results.append(reverse_complement(seq))
-            elif is_rna(seq):
-                results.append(rna_reverse_complement(seq))
-            else:
-                raise ValueError("Sequence should be DNA or RNA.")
+            results.append(reverse_complement(seq))
         else:
-            raise ValueError(
-                f"There is no such procedure in the function: {procedure}"
-            )
+            raise ValueError(f"There is no such procedure in the function: {procedure}")
 
     return results[0] if len(results) == 1 else results
 
@@ -82,13 +53,13 @@ def filter_fastq(seqs: dict,
     """
 
     filtered = {}
-    
-    if type(gc_bounds) in (int, float):
+
+    if isinstance(gc_bounds, (int, float)):
         gc_min, gc_max = 0, float(gc_bounds)
     else:
         gc_min, gc_max = gc_bounds
-
-    if type(length_bounds) in (int, float):
+        
+    if isinstance(length_bounds, (int, float)):
         len_min, len_max = 0, int(length_bounds)
     else:
         len_min, len_max = length_bounds
