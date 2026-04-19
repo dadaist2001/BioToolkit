@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
 from Bio import SeqIO
 from Bio.SeqUtils import gc_fraction
+import logging
 
+# simple logger
+logging.basicConfig(filename="tool.log", level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class BiologicalSequence(ABC):
     """
@@ -148,13 +152,20 @@ def filter_fastq(
     input_fastq,
     output_fastq,
     length_bounds=(0, float("inf")),
-    gc_bounds=(0, 1),
+    gc_bounds=(0, 100),
 ):
     """
     Filter FastQ file by sequence length and GC content.
     """
 
-    records = SeqIO.parse(input_fastq, "fastq")
+    logger.info("Start filtering...")
+
+    try:
+        records = SeqIO.parse(input_fastq, "fastq")
+    except Exception:
+        logger.error("Cannot read file")
+        raise
+
     filtered = []
 
     min_len, max_len = length_bounds
@@ -168,3 +179,7 @@ def filter_fastq(
             filtered.append(record)
 
     SeqIO.write(filtered, output_fastq, "fastq")
+
+    logger.info(f"Done filtering!: {output_fastq}")
+
+    return len(filtered)
